@@ -1,5 +1,4 @@
-# vehicle-routing-problem-DE
-Vehicle Routing Problem Using Differential Evolution Algorithm Study Case PT Surabaya Industrial Estate Rungkut (PT SIER)
+# Vehicle Routing Problem Using Differential Evolution Algorithm Study Case PT Surabaya Industrial Estate Rungkut (PT SIER)
 
 Hello everyone, this is one of my project with my friends from Industrial Engineering department from Universitas Pembangunan Nasional "Veteran" Jawa Timur. I use MATLAB programming language to solve the formula that we are created.
 
