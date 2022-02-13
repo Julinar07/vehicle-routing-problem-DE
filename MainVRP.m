@@ -2,15 +2,17 @@
 clc; clear; close all, format longg;
 
 % Initialization
-Np=50;                                                  % Number of generate population
+Np=30;                                                  % Number of generate population
 capacity = 600;                                         % Vehicle capacity
 lb = 1;                                                 % Lower bound
 ub = 11;                                                % Upper bound
-PCr = 0.9;                                              % Crossover probability
+PCr = 0.5;                                              % Crossover probability
 F = 0.8;                                                % Mutation rate
-d = length(lb);                                         % Dimension
-T = 1000;                                                % Maximum iterations
+d = lb;                                         % Dimension
+T = 500;                                                % Maximum iterations
 vecX = zeros(Np,ub);
+test = 100;
+BestAll = zeros(test,ub+2);
 
 distance = [0 18 29.4 24.8 88.3 191 110 147 61.8 274 345 346; ...
     18 0 32.5 28.2 90.7 194 113 150 50.1 321 348 349; ...
@@ -27,48 +29,52 @@ distance = [0 18 29.4 24.8 88.3 191 110 147 61.8 274 345 346; ...
 
 demand = [200 220 180 180 200 150 160 110 110 160 140];
 
-% Generate Population (Route)
-customer = lb:1:ub;
-for k = 1:Np
-    vecX(k,:) = customer(randperm(numel(customer)));
-end
-
-% DE Process
-for n = 1:T
-    for i=1:Np
-        id = randi(Np,3,1);                                % Selecting 3 random vector
-        xp = vecX(id(1),:);
-        xq = vecX(id(2),:);
-        xr = vecX(id(3),:);
-        v = Mutation(xp,xq,xr,F,lb,ub);                    % Create vector mutation
-        Jr = randi(d);
-        r = rand();
-        
-        % Crossover
-        for j = 1:d
-            if r <= PCr || j == Jr
-                u = v;
-            else
-                u = vecX(i,:);
-            end
-        end
-        
-        % Checking distance
-        [FitReal, optReal] = MinimumDistance(distance,vecX(i,:),capacity,demand);
-        
-        [FitCros, optCros] = MinimumDistance(distance,u,capacity,demand);
-        
-        % Selection
-        if FitCros <= FitReal
-            vecX(i,:) = u;
-            FitReal = FitCros;
-            optReal = optCros;
-        end
-        SaveOpt(i)=optReal;
-        SaveDistance(i,1)=FitReal;
+for p=1:test
+    % Generate Population (Route)
+    customer = lb:1:ub;
+    for k = 1:Np
+        vecX(k,:) = customer(randperm(numel(customer)));
     end
-    [num,loc] = min(SaveDistance);
-    Xest = vecX(loc,:);
-    DistHist(n,1) = num;
-    fprintf('Iterasi ke-%3d telah dijalankan\n',n);
+
+    % DE Process
+    for n = 1:T
+        for i=1:Np
+            id = randi(Np,3,1);                                % Selecting 3 random vector
+            xp = vecX(id(1),:);
+            xq = vecX(id(2),:);
+            xr = vecX(id(3),:);
+            v = Mutation(xp,xq,xr,F,lb,ub);                    % Create vector mutation
+            Jr = randi(d);
+            r = rand();
+
+            % Crossover
+            for j = 1:d
+                if r <= PCr || j == Jr
+                    u = v;
+                else
+                    u = vecX(i,:);
+                end
+            end
+
+            % Checking distance
+            [FitReal, optReal] = MinimumDistance(distance,vecX(i,:),capacity,demand);
+
+            [FitCros, optCros] = MinimumDistance(distance,u,capacity,demand);
+
+            % Selection
+            if FitCros <= FitReal
+                vecX(i,:) = u;
+                FitReal = FitCros;
+                optReal = optCros;
+            end
+            SaveOpt(i)=optReal;
+            SaveDistance(i,1)=FitReal;
+        end
+        [num,loc] = min(SaveDistance);
+        Xest = vecX(loc,:);
+        DistHist(n,1) = num; 
+    end
+    save = [Xest num SaveOpt(loc)];
+    BestAll(p,:) = save;
+    fprintf('Iterasi ke-%3d telah dijalankan\n',p);
 end

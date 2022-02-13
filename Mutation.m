@@ -1,6 +1,6 @@
 function v = Mutation(xp,xq,xr,F,lb,ub)
 % Mutation formula (little bit modification)
-start_v = round(abs(xp + F*(xq - xr)));
+start_v = round(xp + F*(xq - xr));
 
 % Prevent out from boundary
 for i=1:length(start_v)
